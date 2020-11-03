@@ -1,0 +1,54 @@
+﻿@model Banking101.ViewModels.AccountListVM
+@{
+}
+<select>
+    @foreach (var currency in Model.Currencies) {
+        <option>@currency</option>
+    } 
+</select>
+
+
+@if (Model.Accounts.NumberOfPages > 1)
+{
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @if (Model.Accounts.Page > 0)
+        {
+        <li class="page-item"><a href="?customerId=@(Model.CustomerId)&page=@(Model.Accounts.Page - 1)&rowsPerPage=@(Model.Accounts.RowsPerPage)" class="page-link" href="#">Previous</a></li>
+        }
+        @for (var p = 0; p < Model.Accounts.NumberOfPages; p++)
+        {
+            <li class="page-item"><a class="page-link" href="?customerId=@(Model.CustomerId)&page=@(p)&rowsPerPage=@(Model.Accounts.RowsPerPage)">@(p + 1)</a></li>
+        }
+
+        @if (Model.Accounts.Page < Model.Accounts.NumberOfPages - 1)
+        {
+        <li class="page-item"><a href="?customerId=@(Model.CustomerId)&page=@(Model.Accounts.Page + 1)&rowsPerPage=@(Model.Accounts.RowsPerPage)" class="page-link" href="#">Next</a></li>
+        }
+    </ul>
+</nav>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Account Number</th>
+            <th>Currency</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var account in Model.Accounts.Data)
+        {
+            <tr>
+                <td>@account.Id</td>
+                <td>@(account.Currency == "LBP" ? "LL" : account.Currency)</td>
+                <td>
+                    @account.Amount
+            </td>
+        </tr>
+    }
+
+    
+    </tbody>
+</table>
