@@ -1,0 +1,50 @@
+﻿@model Banking101.ViewModels.CustomerIndexVM
+@{
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>FullName</th>
+            <th>Email</th>
+            <th>Number of Accounts</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model.CustomersPageList.Data)
+        {
+            <tr data-customerlink="@Url.ActionLink( "Index","Customer", new { selectedCustomerId=customer.Id })">
+                <td><a href=""> @customer.FullName</a></td>
+                <td>@customer.Email</td>
+                <td>
+                    @customer.Accounts.Count
+                </td>
+                <td>
+                    <a href="@Url.ActionLink( "Index","Customer", new { selectedCustomerId=customer.Id })">Details</a>
+                </td>
+            </tr>
+            
+        }
+    </tbody>
+</table>
+
+@if (Model.SelectedCustomer != null)
+{
+    <h2>Selected Customer</h2>
+    <p>Full Name: @Model.SelectedCustomer.FullName</p>
+}
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+             
+
+            $("tr").click(function () {
+                window.location = $(this).data("customerlink");
+            });
+        });
+    </script>
+
+}

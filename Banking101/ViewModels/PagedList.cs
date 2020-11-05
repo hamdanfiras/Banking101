@@ -9,7 +9,10 @@ namespace Banking101.ViewModels
     {
         public int Page { get; set; }
         public int RowsPerPage { get; set; }
-        public int NumberOfPages { get; set; }
+
+        public int TotalCount { get; set; }
+        public int NumberOfPages => (int)Math.Ceiling((decimal)TotalCount / RowsPerPage);
+
         public List<T> Data { get; set; }
     }
 }

@@ -19,14 +19,14 @@ namespace Banking101.Controllers
                 return BadRequest();
             }
 
-            Account account = DummyDB.GetAccount(id.Value);
+            Account account = null; //DummyDB.GetAccount(id.Value);
 
             return View(account);
         }
 
         public ActionResult List(int customerId, int page = 0, int rowsPerPage = 5)
         {
-            List<Account> accounts = DummyDB.GetAccounts(customerId);
+            List<Account> accounts = new List<Account>();// DummyDB.GetAccounts(customerId);
 
             var vm = new AccountListVM();
             vm.CustomerId = customerId;
@@ -35,7 +35,7 @@ namespace Banking101.Controllers
                 Page = page,
                 RowsPerPage = rowsPerPage,
                 Data = accounts.Skip(page * rowsPerPage).Take(rowsPerPage).ToList(),
-                NumberOfPages = (int)Math.Ceiling((decimal)accounts.Count / rowsPerPage)
+                TotalCount = accounts.Count
             };
             vm.Currencies = new List<string> { "USD", "LBP" };
             return View(vm);

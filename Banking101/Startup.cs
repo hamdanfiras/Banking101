@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Banking101.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +25,14 @@ namespace Banking101
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // we are getting the connection string from appsettings.json and passing to BankingDB through DbContextOptions 
+            // constructor parameter
+            string connString = Configuration.GetConnectionString("BankingConnection");
+            // write code to decreypt connection from somwhere and put in connString variable
+           
+            services.AddDbContext<BankingDB>(options => options.UseSqlServer(connString));
+
+
             services.AddControllersWithViews();
         }
 
