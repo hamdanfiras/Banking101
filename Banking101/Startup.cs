@@ -33,6 +33,12 @@ namespace Banking101
             services.AddDbContext<BankingDB>(options => options.UseSqlServer(connString));
 
 
+            //services.AddScoped<ICodeSender, DummyCodeSender>();
+            services.AddSingleton<ICodeSender, DummyCodeSender>();
+            //services.AddTransient<ICodeSender, EmailCodeSender>();
+            services.AddSingleton<IBulkCodeSender, BulkCodeSender>();
+
+
             services.AddControllersWithViews();
         }
 

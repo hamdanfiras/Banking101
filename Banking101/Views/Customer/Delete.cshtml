@@ -1,0 +1,10 @@
+﻿@model Customer
+
+<p>
+    Are you sure you want to delete Customer: @await Html.PartialAsync("_CustomerDisplayName", Model)
+    <hr />
+    @using (Html.BeginForm("ConfirmDelete", "Customer", new { id = Model.Id }))
+    {
+        <button type="submit" class="btn btn-danger">Yes Delete</button>
+    }
+</p>

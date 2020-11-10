@@ -2,6 +2,20 @@
 @{
 }
 
+@using (Html.BeginForm("GenerateDummyCustomers", "Customer"))
+{
+
+    <input type="submit" value="Generate Name from file" />
+}
+
+@using (Html.BeginForm("CleanUp", "Customer"))
+{
+    <input type="submit" value="Remove zombie customers" />
+}
+
+
+
+
 <table class="table">
     <thead>
         <tr>
@@ -9,22 +23,27 @@
             <th>Email</th>
             <th>Number of Accounts</th>
             <th>Details</th>
+            <th>Remove</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var customer in Model.CustomersPageList.Data)
         {
-            <tr data-customerlink="@Url.ActionLink( "Index","Customer", new { selectedCustomerId=customer.Id })">
+            <tr data-customerlink="@Url.ActionLink("Index", "Customer", new { selectedCustomerId = customer.Id })">
                 <td><a href=""> @customer.FullName</a></td>
                 <td>@customer.Email</td>
                 <td>
                     @customer.Accounts.Count
                 </td>
                 <td>
-                    <a href="@Url.ActionLink( "Index","Customer", new { selectedCustomerId=customer.Id })">Details</a>
+                    <a href="@Url.ActionLink("Index", "Customer", new { selectedCustomerId = customer.Id })">Details</a>
+                </td>
+                <td>
+
+                    <a href="@Url.Action("Delete", "Customer", new { id = customer.Id })">Delete</a>
                 </td>
             </tr>
-            
+
         }
     </tbody>
 </table>
@@ -32,14 +51,14 @@
 @if (Model.SelectedCustomer != null)
 {
     <h2>Selected Customer</h2>
-    <p>Full Name: @Model.SelectedCustomer.FullName</p>
+    @await Html.PartialAsync("_CustomerDisplayName", Model.SelectedCustomer)
 }
 
 @section Scripts {
 
     <script>
         $(document).ready(function () {
-             
+
 
             $("tr").click(function () {
                 window.location = $(this).data("customerlink");
