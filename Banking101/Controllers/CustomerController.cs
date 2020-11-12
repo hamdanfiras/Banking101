@@ -4,27 +4,38 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Banking101.Filters;
 using Banking101.Models;
+using Banking101.Services;
 using Banking101.ViewModels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Banking101.Controllers
 {
+
+    [Route("Customer")]
     public class CustomerController : Controller
     {
         private readonly BankingDB _db;
         private readonly ICodeSender _codeSender;
         private readonly IBulkCodeSender bulkCodeSender;
+        private readonly CurrencyCalculator currencyCalculator;
+        private readonly IHostingEnvironment hostingEnvironment;
 
-        public CustomerController(BankingDB db, ICodeSender codeSender, IBulkCodeSender bulkCodeSender)
+        public CustomerController(BankingDB db, ICodeSender codeSender, IBulkCodeSender bulkCodeSender, CurrencyCalculator currencyCalculator, IHostingEnvironment hostingEnvironment)
         {
             this._db = db;
             this._codeSender = codeSender;
             this.bulkCodeSender = bulkCodeSender;
+            this.currencyCalculator = currencyCalculator;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
+        [SendVersion]
+        [Route("Index")]
         public ActionResult Index(Guid? selectedCustomerId, int page = 0, int rowsPerPage = 5)
         {
             int count = _db.Customers.Count();
@@ -41,6 +52,7 @@ namespace Banking101.Controllers
             {
                 selectedCustomer = _db.Customers.FirstOrDefault(x => x.Id == selectedCustomerId);
             }
+
 
             //// row grouping
             //List<IGrouping<string, Account>> accountsGroup = _db.Accounts.GroupBy(x => x.Currency).ToList();
@@ -82,6 +94,7 @@ namespace Banking101.Controllers
         }
 
         [HttpPost]
+        [Route("GenerateDummyCustomers")]
         public ActionResult GenerateDummyCustomers()
         {
             // "c:\test\randomnames.txt
@@ -117,6 +130,7 @@ namespace Banking101.Controllers
             _db.SaveChanges();
 
             return RedirectToAction("Index");
+            //return RedirectToRoute("/Customer/Index");
         }
 
         [HttpPost]
@@ -131,7 +145,7 @@ namespace Banking101.Controllers
             _db.Customers.RemoveRange(toDelete);
             _db.SaveChanges();
             return RedirectToAction("Index");
-
+            //return StatusCode(404);
         }
 
         [HttpGet]
@@ -168,13 +182,38 @@ namespace Banking101.Controllers
 
         }
 
-        public async Task< ActionResult> SendBulkCode()
+        public async Task<ActionResult> SendBulkCode()
         {
             // we send the code here
             var rnd = new Random();
             var customerCodes = _db.Customers.ToDictionary(x => x, x => rnd.Next(100000, 999999).ToString());
+
             await bulkCodeSender.SendBulkCode(customerCodes);
             return RedirectToAction("Index");
         }
+
+        [Route("TestParams/{xyz}/{abc}")]
+        public async Task<ActionResult> TestParams([FromRoute] string xyz, [FromRoute] string abc)
+        {
+            return Content(xyz + " / " + abc, "text/plain");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddCustomer(Customer customer)
+        {
+            // after validation
+            _db.Customers.Add(customer);
+            _db.SaveChanges();
+
+            //_db.Entry(customer.Accounts[0]).State = EntityState.;
+
+            return RedirectToAction("Index");
+        }
+
+        //[Route("TestParams")]
+        //public async Task<ActionResult> TestParams()
+        //{
+        //    return Content("hello world");
+        //}
     }
 }

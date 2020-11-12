@@ -5,11 +5,16 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Data;
+using Microsoft.AspNetCore.Authorization;
+using Banking101.Filters;
 
 namespace Banking101.Controllers
 {
+      
     public class AccountController : Controller
     {
+       
+      
         public ActionResult Index(int? id)
         {
             // simulate calling database 
@@ -38,7 +43,7 @@ namespace Banking101.Controllers
                 TotalCount = accounts.Count
             };
             vm.Currencies = new List<string> { "USD", "LBP" };
-            return View(vm);
+            return View(vm); 
         }
     }
 }

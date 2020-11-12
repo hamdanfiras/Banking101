@@ -1,0 +1,9 @@
+﻿@model Banking101.Components.Confirm.ConfirmComponentViewModel
+<p>
+    @Model.Message
+    <hr />
+    @using (Html.BeginForm(Model.Action, Model.Controller, Model.Values))
+    {
+        <button type="submit" class="btn btn-danger">@Model.SubmitButtonTitle</button>
+    }
+</p>

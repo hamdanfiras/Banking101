@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Banking101.Models;
+using Banking101.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,17 +35,29 @@ namespace Banking101
 
 
             //services.AddScoped<ICodeSender, DummyCodeSender>();
-            services.AddSingleton<ICodeSender, DummyCodeSender>();
+            services.AddTransient<ICodeSender, DummyCodeSender>();
             //services.AddTransient<ICodeSender, EmailCodeSender>();
-            services.AddSingleton<IBulkCodeSender, BulkCodeSender>();
+            services.AddTransient<IBulkCodeSender, BulkCodeSender>();
+
+            services.AddScoped<CurrencyCalculator>();
 
 
             services.AddControllersWithViews();
+            services.Configure<Microsoft.AspNetCore.Mvc.Razor.RazorViewEngineOptions>(options =>
+            {
+                options.ViewLocationFormats.Add("/{0}.cshtml");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("POWERBY", "TEAM FORMATECH");
+                await next.Invoke();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -73,6 +86,17 @@ namespace Banking101
                     name: "default",
                     pattern: "{controller=Account}/{action=Index}/{id?}");
             });
+
+            // we used this routing method before asp.net core 3.x
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller}/{action}/{param}",
+            //        defaults: new { controller = "Some", action = "ShowParam" },
+            //        constraints: new { param = "[0-9]+" });
+            //});
+
         }
     }
 }
