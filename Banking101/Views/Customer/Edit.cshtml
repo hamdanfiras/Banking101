@@ -1,0 +1,18 @@
+﻿@model  Customer
+
+<form asp-action="Edit">
+    <label asp-for="FullName"></label>
+    <input asp-for="FullName" />
+    <span asp-validation-for="FullName"></span>
+    <hr />
+    <label asp-for="Email"></label>
+    <input asp-for="Email" />
+    <span asp-validation-for="Email"></span>
+    <hr />
+    <input type="submit" value="Submit" />
+</form>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

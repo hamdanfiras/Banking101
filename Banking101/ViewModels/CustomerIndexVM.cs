@@ -11,5 +11,9 @@ namespace Banking101.ViewModels
         public PagedList<Customer> CustomersPageList { get; set; }
 
         public Customer SelectedCustomer { get; set; }
+
+        public string SelectedCountry { get; set; }
+
+        public Dictionary<string, string> AllCountries { get; set; }
     }
 }

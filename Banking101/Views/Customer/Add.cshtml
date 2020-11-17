@@ -1,0 +1,49 @@
+﻿@model Customer
+
+
+<form asp-action="Add" asp-controller="Customer">
+
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="FullName"></label>
+    <input asp-for="FullName" />
+    <span asp-validation-for="FullName" class="text-danger"></span>
+    <br />
+    <label asp-for="Email"></label>
+    <input asp-for="Email" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+
+    <input type="submit" value="Create" class="btn btn-primary" />
+</form>
+
+
+@*CLASSICAL ASP.NET WAY*@
+@*@using (Html.BeginForm("Add", "Customer"))
+    {
+
+        @Html.DisplayFor(x => x.FullName)
+        @Html.EditorFor(x => x.FullName)
+        <br />
+        @Html.DisplayFor(x => x.Email)
+        @Html.EditorFor(x => x.Email)
+
+
+
+        <button type="submit">Submit</button>
+    }*@
+
+
+@*HTML WAY*@
+@*<form method="post" action="/customer/add">
+        <input type="text" name="FullName" />
+        <br />
+        <input type="email" name="Email" />
+        <br />
+
+        <button type="submit">Add Customer</button>
+    </form>*@
+
+
+@section Scripts {
+ 
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,5 +1,7 @@
-﻿@model Banking101.ViewModels.CustomerIndexVM
+﻿@model CustomerIndexVM
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment environment
 @{
+    var allCountries = Model.AllCountries;
 }
 
 @using (Html.BeginForm("GenerateDummyCustomers", "Customer"))
@@ -13,9 +15,25 @@
     <input type="submit" value="Remove zombie customers" />
 }
 
+@{
+    // I can write c# inside this code block and use the value in html
+    var i = 10;
+    var j = i * 10;
+}
 
 
+<h2>Example of Dependency Injection inside view @environment.ContentRootPath</h2>
 
+<form asp-action="Index" method="get">
+    <select name="country" onchange="this.form.submit()">
+        <option >[All]</option>
+        @foreach (string key in allCountries.Keys)
+        {
+            <option selected="@(key == Model.SelectedCountry ? "selected" : "")" value="@key">@(allCountries[key])</option>
+        }
+    </select>
+    <input type="submit"  value="Filter"/>
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -23,26 +41,31 @@
             <th>Email</th>
             <th>Number of Accounts</th>
             <th>Details</th>
+            <th>Edit</th>
             <th>Remove</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var customer in Model.CustomersPageList.Data)
         {
-            <tr data-customerlink="@Url.ActionLink("Index", "Customer", new { selectedCustomerId = customer.Id })">
-                <td><a href=""> @customer.FullName</a></td>
-                <td>@customer.Email</td>
-                <td>
-                    @customer.Accounts.Count
-                </td>
-                <td>
-                    <a href="@Url.ActionLink("Index", "Customer", new { selectedCustomerId = customer.Id })">Details</a>
-                </td>
-                <td>
+        <tr data-customerlink="@Url.ActionLink("Index", "Customer", new { selectedCustomerId = customer.Id })">
+            <td><a href=""> @customer.FullName</a></td>
+            <td>@customer.Email</td>
+            <td>
+                @customer.Accounts.Count
+            </td>
+            <td>
+                <a href="@Url.ActionLink("Index", "Customer", new { selectedCustomerId = customer.Id })">Details</a>
+            </td>
 
-                    <a href="@Url.Action("Delete", "Customer", new { id = customer.Id })">Delete</a>
-                </td>
-            </tr>
+            <td>
+                <a href="@Url.ActionLink("Edit", "Customer", new { id = customer.Id })">Edit</a>
+            </td>
+            <td>
+
+                <a href="@Url.Action("Delete", "Customer", new { id = customer.Id })">Delete</a>
+            </td>
+        </tr>
 
         }
     </tbody>

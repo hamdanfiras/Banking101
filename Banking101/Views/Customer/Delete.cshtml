@@ -1,7 +1,7 @@
 ﻿@model Customer
 
 
-@await Component.InvokeAsync("Confirm", new
+@*@await Component.InvokeAsync("Confirm", new
 {
 
     action = "ConfirmDelete",
@@ -10,8 +10,15 @@
 
     submitButtonTitle = "Yes Delete",
     message = "Are you sure you want to delete Customer: " + Model.FullName,
-});
+});*@
 
+<vc:confirm action="ConfirmDelete" controller="Customer" values="@(new { id = Model.Id })"
+            submitButtonTitle="Yes Delete" ,
+            message="Are you sure you want to delete Customer: @Model.FullName"></vc:confirm>
+
+
+@*<partial name="_loginPartial" for="FullName" />
+@await Html.PartialAsync("_loginPartial", Model.FullName)*@
 
 @*<p>
         Are you sure you want to delete Customer: @await Html.PartialAsync("_CustomerDisplayName", Model)

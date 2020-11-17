@@ -23,9 +23,9 @@ namespace Banking101.Controllers
         private readonly ICodeSender _codeSender;
         private readonly IBulkCodeSender bulkCodeSender;
         private readonly CurrencyCalculator currencyCalculator;
-        private readonly IHostingEnvironment hostingEnvironment;
+        private readonly IWebHostEnvironment hostingEnvironment;
 
-        public CustomerController(BankingDB db, ICodeSender codeSender, IBulkCodeSender bulkCodeSender, CurrencyCalculator currencyCalculator, IHostingEnvironment hostingEnvironment)
+        public CustomerController(BankingDB db, ICodeSender codeSender, IBulkCodeSender bulkCodeSender, CurrencyCalculator currencyCalculator, IWebHostEnvironment hostingEnvironment)
         {
             this._db = db;
             this._codeSender = codeSender;
@@ -36,11 +36,12 @@ namespace Banking101.Controllers
 
         [SendVersion]
         [Route("Index")]
-        public ActionResult Index(Guid? selectedCustomerId, int page = 0, int rowsPerPage = 5)
+        public ActionResult Index(Guid? selectedCustomerId, string country = null, int page = 0, int rowsPerPage = 5)
         {
             int count = _db.Customers.Count();
 
             List<Customer> customers = _db.Customers
+                .Where(x => country == null || x.Country == country)
                 .Include(c => c.Accounts)
                 .Skip(page * rowsPerPage)
                 .Take(rowsPerPage)
@@ -82,16 +83,20 @@ namespace Banking101.Controllers
                     TotalCount = count,
                     Data = customers
                 },
-                SelectedCustomer = selectedCustomer
+                SelectedCustomer = selectedCustomer,
+                SelectedCountry = country,
+                AllCountries = Countries.GetCountries()
             };
 
             return View(vm);
         }
 
+        [Route("Details")]
         public ActionResult Details(Guid? id)
         {
             return View();
         }
+
 
         [HttpPost]
         [Route("GenerateDummyCustomers")]
@@ -134,6 +139,7 @@ namespace Banking101.Controllers
         }
 
         [HttpPost]
+        [Route("CleanUp")]
         public ActionResult CleanUp()
         {
             var customers = _db.Customers
@@ -149,6 +155,7 @@ namespace Banking101.Controllers
         }
 
         [HttpGet]
+        [Route("Delete")]
         public ActionResult Delete(Guid id)
         {
             Customer customer = _db.Customers.FirstOrDefault(x => x.Id == id);
@@ -156,6 +163,7 @@ namespace Banking101.Controllers
         }
 
         [HttpPost]
+        [Route("ConfirmDelete")]
         public ActionResult ConfirmDelete(Guid id)
         {
             var customer = _db.Customers.FirstOrDefault(x => x.Id == id);
@@ -167,6 +175,7 @@ namespace Banking101.Controllers
             return RedirectToAction("Index");
         }
 
+        [Route("SendCode")]
         public ActionResult SendCode(Guid id)
         {
             // we send the code here
@@ -182,6 +191,7 @@ namespace Banking101.Controllers
 
         }
 
+        [Route("SendBulkCode")]
         public async Task<ActionResult> SendBulkCode()
         {
             // we send the code here
@@ -198,22 +208,80 @@ namespace Banking101.Controllers
             return Content(xyz + " / " + abc, "text/plain");
         }
 
+
+        [Route("Add")]
+        [HttpGet]
+        public async Task<ActionResult> Add()
+        {
+            return View();
+        }
+
         [HttpPost]
-        public async Task<ActionResult> AddCustomer(Customer customer)
+        [Route("Add")]
+        public async Task<ActionResult> Add(Customer customer)
         {
             // after validation
+
+
+            if (customer == null)
+            {
+                ModelState.AddModelError("EmptyCustomer", "The customer is empty");
+                return View(customer);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(customer);
+            }
+
+            if (customer.Id == default)
+            {
+                customer.Id = Guid.NewGuid();
+            }
+
             _db.Customers.Add(customer);
+            await _db.SaveChangesAsync();
+
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Route("Edit/{id}")]
+        public ActionResult Edit(Guid id)
+        {
+            var customer = _db.Customers.FirstOrDefault(c => c.Id == id);
+            if (customer == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(customer);
+        }
+
+        [HttpPost]
+        [Route("Edit/{id}")]
+        public ActionResult Edit([FromRoute] Guid id, Customer customer)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(customer);
+            }
+
+            var dbCustomer = _db.Customers.FirstOrDefault(x => x.Id == id);
+            if (dbCustomer == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            dbCustomer.FullName = customer.FullName;
+            dbCustomer.Email = customer.Email;
+
             _db.SaveChanges();
 
-            //_db.Entry(customer.Accounts[0]).State = EntityState.;
 
             return RedirectToAction("Index");
         }
 
-        //[Route("TestParams")]
-        //public async Task<ActionResult> TestParams()
-        //{
-        //    return Content("hello world");
-        //}
     }
 }
