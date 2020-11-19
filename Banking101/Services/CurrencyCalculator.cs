@@ -15,6 +15,7 @@ namespace Banking101.Services
         {
             this.bankingDB = bankingDB;
         }
+
         public decimal Calculate(string fromCurrency, string toCurrency, decimal amount)
         {
             // in real life i will be calling the db

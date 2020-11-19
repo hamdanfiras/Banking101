@@ -6,22 +6,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Banking101.Models;
+using Castle.Core.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Banking101.Controllers
 {
     public class CustomersController : Controller
     {
         private readonly BankingDB _context;
+        private readonly SMSServiceOptions _smsOptions;
 
-        public CustomersController(BankingDB context)
+        public CustomersController(BankingDB context, IOptions<SMSServiceOptions> smsOptions)
         {
             _context = context;
+            _smsOptions = smsOptions.Value;
         }
 
         // GET: Customers
         public async Task<IActionResult> Index()
         {
             var customers = await _context.Customers.ToListAsync();
+            IQueryable<Customer> customers2 = from c in _context.Customers select c;
+            //var customers =  _context.Customers.FromSqlRaw("select * from customers").ToList();
+
             return View(customers);
         }
 
@@ -33,8 +40,36 @@ namespace Banking101.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers
+
+            // Eager loading
+            Customer customer = await _context.Customers
+                .Include(x => x.Accounts)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+
+            // explicit loading
+            Customer customer2 = await _context.Customers.FirstOrDefaultAsync(m => m.Id == id);
+
+            _context.Entry(customer2)
+                .Collection(c => c.Accounts)
+                .Load();
+
+            // lazy loading
+            //Customer customer3 = await _context.Customers.FirstOrDefaultAsync(m => m.Id == id);
+            //var accounts = customer.Accounts;
+
+
+
+            //customer.Accounts (count 5)
+
+            //        var city = _context.Cities
+            //.Single(c => c.CityId == 1);
+
+            //        _context.Entry(city)
+            //            .Collection(c => c.People)
+            //            .Load();
+
+
             if (customer == null)
             {
                 return NotFound();

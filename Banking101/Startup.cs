@@ -30,9 +30,25 @@ namespace Banking101
             // constructor parameter
             string connString = Configuration.GetConnectionString("BankingConnection");
             // write code to decreypt connection from somwhere and put in connString variable
-           
-            services.AddDbContext<BankingDB>(options => options.UseSqlServer(connString));
 
+
+            services.AddDbContext<BankingDB>(options =>
+            {
+                options.UseSqlServer(connString);
+            });
+
+            // lazy loading
+            //services.AddDbContext<BankingDB>(options =>
+            //{
+            //    options.UseLazyLoadingProxies().UseSqlServer(connString);
+            //});
+
+
+
+            services.Configure<SMSServiceOptions>(Configuration.GetSection("SMSService"));
+
+            //Microsoft.EntityFrameworkCore
+            //Microsoft.EntityFrameworkCore.SqlServer
 
             //services.AddScoped<ICodeSender, DummyCodeSender>();
             services.AddTransient<ICodeSender, DummyCodeSender>();

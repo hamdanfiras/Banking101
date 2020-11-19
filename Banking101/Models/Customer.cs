@@ -23,7 +23,7 @@ namespace Banking101.Models
 
         public DateTime CreateDate { get; set; } = DateTime.UtcNow;
 
-        public List<Account> Accounts { get; set; }
+        public virtual List<Account> Accounts { get; set; }
     }
 
 

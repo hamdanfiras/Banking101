@@ -29,7 +29,7 @@
         <option >[All]</option>
         @foreach (string key in allCountries.Keys)
         {
-            <option selected="@(key == Model.SelectedCountry ? "selected" : "")" value="@key">@(allCountries[key])</option>
+            <option   selected="@(key == Model.SelectedCountry ? "selected" : "")" value="@key">@(allCountries[key])</option>
         }
     </select>
     <input type="submit"  value="Filter"/>
