@@ -14,11 +14,17 @@ namespace Banking101.Controllers
     public class CustomersController : Controller
     {
         private readonly BankingDB _context;
+
+        // basic configuration access
+        private readonly IConfiguration configuration;
+
+        // ioptions configuration access
         private readonly SMSServiceOptions _smsOptions;
 
-        public CustomersController(BankingDB context, IOptions<SMSServiceOptions> smsOptions)
+        public CustomersController(BankingDB context, IOptions<SMSServiceOptions> smsOptions, IConfiguration configuration)
         {
             _context = context;
+            this.configuration = configuration;
             _smsOptions = smsOptions.Value;
         }
 

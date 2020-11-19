@@ -17,21 +17,22 @@
 
 @{
     // I can write c# inside this code block and use the value in html
-    var i = 10;
-    var j = i * 10;
+    var countriesSelectListItems = allCountries.Select(c => new SelectListItem(c.Value, c.Key, c.Key == Model.SelectedCountry)).ToList();
 }
 
 
 <h2>Example of Dependency Injection inside view @environment.ContentRootPath</h2>
 
-<form asp-action="Index" method="get">
-    <select name="country" onchange="this.form.submit()">
+<form asp-action="Index" method="get" id="filterform">
+
+    @Html.DropDownListFor(x => x.SelectedCountry, countriesSelectListItems)
+    @*<select name="country" onchange="this.form.submit()">
         <option >[All]</option>
         @foreach (string key in allCountries.Keys)
         {
             <option   selected="@(key == Model.SelectedCountry ? "selected" : "")" value="@key">@(allCountries[key])</option>
         }
-    </select>
+    </select>*@
     <input type="submit"  value="Filter"/>
 </form>
 <table class="table">
@@ -86,6 +87,10 @@
     <script>
         $(document).ready(function () {
 
+            $("#SelectedCountry").change(function () {
+                console.log("changing");
+                $("#filterform").submit();
+            });
 
             $("tr").click(function () {
                 window.location = $(this).data("customerlink");

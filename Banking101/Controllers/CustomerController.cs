@@ -36,12 +36,12 @@ namespace Banking101.Controllers
 
         [SendVersion]
         [Route("Index")]
-        public ActionResult Index(Guid? selectedCustomerId, string country = null, int page = 0, int rowsPerPage = 5)
+        public ActionResult Index(Guid? selectedCustomerId, string selectedCountry = null, int page = 0, int rowsPerPage = 5)
         {
             int count = _db.Customers.Count();
 
             List<Customer> customers = _db.Customers
-                .Where(x => country == null || x.Country == country)
+                .Where(x => selectedCountry == null || x.Country == selectedCountry)
                 .Include(c => c.Accounts)
                 .Skip(page * rowsPerPage)
                 .Take(rowsPerPage)
@@ -84,7 +84,7 @@ namespace Banking101.Controllers
                     Data = customers
                 },
                 SelectedCustomer = selectedCustomer,
-                SelectedCountry = country,
+                SelectedCountry = selectedCountry,
                 AllCountries = Countries.GetCountries()
             };
 

@@ -30,7 +30,7 @@ namespace Banking101
             // constructor parameter
             string connString = Configuration.GetConnectionString("BankingConnection");
             // write code to decreypt connection from somwhere and put in connString variable
-
+          
 
             services.AddDbContext<BankingDB>(options =>
             {
@@ -42,6 +42,7 @@ namespace Banking101
             //{
             //    options.UseLazyLoadingProxies().UseSqlServer(connString);
             //});
+            
 
 
 
